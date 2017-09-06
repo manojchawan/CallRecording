@@ -32,7 +32,6 @@ public class CallRecordingService extends Service {
     int i = 0;
     String fname, timing;
     DateFormat dateFormat;
-    Date date;
 
     BroadcastReceiver callRecorder = new BroadcastReceiver() {
         @Override
@@ -59,7 +58,9 @@ public class CallRecordingService extends Service {
             if (TelephonyManager.EXTRA_STATE_RINGING.equals(state)) {
 
                 fname = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
-                fname =fname+" "+timing;
+                timing = dateFormat.format(new Date());
+                Log.d(TAG, "ringing: Date " + timing);
+                fname = fname + " " + timing;
                 Toast.makeText(getApplicationContext(), state + " : " + fname, Toast.LENGTH_LONG).show();
                 Log.d(TAG, "onReceive: Ringing");
             }
@@ -69,7 +70,9 @@ public class CallRecordingService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             fname = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
-            fname =fname+" "+timing;
+            timing = dateFormat.format(new Date());
+            Log.d(TAG, "out going: Date " + timing);
+            fname = fname + " " + timing;
         }
     };
 
@@ -79,7 +82,6 @@ public class CallRecordingService extends Service {
         super.onCreate();
         Toast.makeText(getApplicationContext(), "Service Created", Toast.LENGTH_LONG).show();
         Log.d(TAG, "onCreate: Service created");
-
         IntentFilter RecFilter = new IntentFilter();
         RecFilter.addAction("android.intent.action.PHONE_STATE");
         registerReceiver(callRecorder, RecFilter);
@@ -87,10 +89,7 @@ public class CallRecordingService extends Service {
         OutGoingNumFilter.addAction("android.intent.action.NEW_OUTGOING_CALL");
         registerReceiver(outGoingNumDetect, OutGoingNumFilter);
 
-        dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        date = new Date();
-        timing = dateFormat.format(date);
-        Log.d(TAG, "onCreate: Date "+timing);
+        dateFormat = new SimpleDateFormat("yyyy MM dd HH mm ss");
     }
 
 
